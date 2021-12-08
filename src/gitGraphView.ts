@@ -1,3 +1,4 @@
+import * as os from 'os';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import { AvatarManager } from './avatarManager';
@@ -715,6 +716,22 @@ export class GitGraphView extends Disposable {
 		this.isGraphViewLoaded = numRepos > 0;
 		this.loadViewTo = null;
 
+		const defaultVscodeFontFamily = new Map([
+			['Darwin', '-apple-system, BlinkMacSystemFont, sans-serif'],
+			['Linux', 'system-ui, "Ubuntu", "Droid Sans", sans-serif'],
+			['Windows_NT', '"Segoe WPC", "Segoe UI", sans-serif']
+		]);
+		const fallbackFontFamily = 'sans-serif';
+		const defaultFontFamily = defaultVscodeFontFamily.get(os.type()) || fallbackFontFamily;
+		const customFontFamilyRules = `
+			body {
+				--vscode-font-family: "Sarasa Mono TC Nerd Font", ${defaultFontFamily};
+			}
+			code {
+				font-family: "Sarasa Mono TC Nerd Font";
+			}
+		`;
+
 		return `<!DOCTYPE html>
 		<html lang="en">
 			<head>
@@ -724,6 +741,7 @@ export class GitGraphView extends Disposable {
 				<link rel="stylesheet" type="text/css" href="${this.getMediaUri('out.min.css')}">
 				<title>Git Graph</title>
 				<style>body{${colorVars}} ${colorParams}</style>
+				<style>${customFontFamilyRules}</style>
 			</head>
 			${body}
 		</html>`;
