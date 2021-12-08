@@ -1,0 +1,26 @@
+name: release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*-*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - name: npm install
+        run: npm install
+      - name: install VSCE
+        run: npm install -g vsce
+      - name: create extension
+        run: npx vsce package
+      - name: release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: '*.vsix'
+          token: ${{ secrets.GITHUB_TOKEN }}
